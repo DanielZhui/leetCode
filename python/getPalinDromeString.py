@@ -15,8 +15,16 @@
 解题思路：
 1. 什么是回文串：字符串顺序和倒序完全相同，eg：'abcba'、'abcddcba'
 '''
+'''
+# 错误实例：回文串理解错误、以为首位和末尾相同即可
+注意点：
+1. 当字符串长度小于等于1时返回本身
+2. 如果字符串中无回文串则返回字符串第一个字符
+3. 连续相同的字符串
+'''
 
-# 错误实例：回文串理解错误、以为首位和末尾相同即可，获取最长此种类型字符串
+
+'''
 class Solution:
     def longestPalindrome(self, s: str) -> str:
         s_dict = {}
@@ -32,9 +40,9 @@ class Solution:
                 # 需要判断是否为回文字符串，如果这里还会出现重复的需要更新长度
                 s_index = s_dict[s[index]]
                 s_length = index - s_index
-                if s[int(s_index):int(index +1)] == s[int(s_index):int(index +1)][::-1]:
-                    s_length_list.append({"length": s_length, "index": '{}-{}'.format(s_index, index)})
+                if s[s_index:index +1] == s[s_index:index +1][::-1]:
                     s_dict[s[index]] = index
+                    s_length_list.append({"length": s_length, "index": '{}-{}'.format(s_index, index)})
         max_length = 0
         index = ''
         if not len(s_length_list):
@@ -52,5 +60,36 @@ class Solution:
 
 solution = Solution()
 # s = 'abcddcba'
-result = solution.longestPalindrome("aaaa")
+result = solution.longestPalindrome("aabaa")
+print(result)
+'''
+
+# 方法一：暴力破解（这种方式回超时）
+class Solution:
+    def longestPalindrome(self, s):
+        if len(s) < 2:
+            return s
+        s_len = len(s)
+        max_len = 0
+        palindrome = ''
+        for i in range(s_len):
+            for j in range(i+1, s_len):
+                is_palindrome =True
+                # 判断是否为回文字符串
+                for k in range(i, int((i+j)/2) + 1):
+                    if s[k] != s[j - k + i]:
+                        is_palindrome = False
+                        break
+                # 如果是回文字符串则且但前最大长度大于 max_len, 重置 max_len
+                if is_palindrome and max_len < (j - i + 1):
+                    max_len = (j - i +1)
+                    palindrome = s[i: j+1]
+        # 当字符串中无满足的回文子串时，返回字符串第一个字符
+        if not palindrome:
+            palindrome = s[0]
+        return palindrome
+
+solution = Solution()
+s = 'abcddcba'
+result = solution.longestPalindrome("cbbd")
 print(result)
